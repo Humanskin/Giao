@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	tp "webblog/testpost"
+	sc "webblog/middleware"
 )
 
 type User struct {
@@ -149,6 +150,15 @@ func main() {
 		route.POST("/adds", func(c *gin.Context) {
 			tp.Tests(c)
 		})
+
+		route.GET("/", sc.StatCost(), func(c *gin.Context) {
+			//c.String(http.StatusOK, "Hello World!")
+			c.JSON(http.StatusOK, gin.H{
+				"name":    c.MustGet("name"),
+				"message": "Hello World!",
+			})
+		})
+
 	}
 
 	r.Run(":8899")
