@@ -7,6 +7,8 @@ import (
 	"net/http"
 	tp "webblog/testpost"
 	sc "webblog/middleware"
+	sqls "webblog/sqlconfig"
+	"webblog/sqlite"
 )
 
 type User struct {
@@ -159,7 +161,67 @@ func main() {
 			})
 		})
 
+		route.GET("/sql", func(c *gin.Context) {
+
+			err := sqls.InitDB()
+			if err != nil {
+				log.Printf("error from %v", err)
+			} else {
+				c.String(200, "that is ok")
+			}
+			c.String(200, "that is ok")
+			return
+			//c.String(http.StatusOK, "Hello World!")
+			//c.JSON(http.StatusOK, gin.H{
+			//	"name":    c.MustGet("name"),
+			//	"message": "Hello World!",
+			//})
+		})
+
 	}
+
+	r.GET("/getOrderBill", func(c *gin.Context) {
+		err := sqlite.InitDB()
+		if err != nil {
+			c.String(403, fmt.Sprintf("init db failed,err: %v\n", err))
+		}
+		var orderBill = make(map[string]interface{})
+		orderBill = sqlite.QueryRow()
+
+		c.JSON(http.StatusOK, gin.H{
+			"id":         orderBill["id"],
+			"orderNo":    orderBill["orderNo"],
+			"recordType": orderBill["recordType"],
+		})
+	})
+
+	r.GET("/getOrderBillStruct", func(c *gin.Context) {
+		err := sqlite.InitDB()
+		if err != nil {
+			c.String(403, fmt.Sprintf("init db failed,err: %v\n", err))
+		}
+
+		//type Qbs struct {
+		//	Id         int
+		//	OrderNo    string
+		//	RecordType string
+		//}
+		var orderBill sqlite.Obs
+		//
+		//qps := sqlite.QueryRowStruct()
+		//orderBill.Id = qps.Id
+		//orderBill.OrderNo = qps.OrderNo
+		//orderBill.RecordType = qps.RecordType
+		orderBill = sqlite.QueryRowStruct()
+		//c.String(333, "%T", orderBill)
+		//return
+		c.JSON(http.StatusOK, gin.H{
+			"id":         orderBill.Id,
+			"orderNo":    orderBill.OrderNo,
+			"recordType": orderBill.RecordType,
+			"data": orderBill.Data,
+		})
+	})
 
 	r.Run(":8899")
 }
