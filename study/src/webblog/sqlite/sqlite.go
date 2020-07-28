@@ -42,12 +42,12 @@ func InitDB() (err error) {
 }
 
 type Obs struct {
-	Id int
-	OrderNo string
+	Id         int
+	OrderNo    string
 	RecordType string
-	Data struct{
-		Id int
-		OrderNo string
+	Data       struct {
+		Id         int
+		OrderNo    string
 		RecordType string
 	}
 }
@@ -63,6 +63,7 @@ func QueryRowStruct() Obs {
 	}
 
 	fmt.Printf("id: %d\norderNo: %v\nrecordType: %v", orderBill.Id, orderBill.OrderNo, orderBill.RecordType)
+
 	var Obs Obs
 	Obs.Id = orderBill.Id
 	Obs.OrderNo = orderBill.OrderNo
@@ -72,7 +73,6 @@ func QueryRowStruct() Obs {
 	Obs.Data.RecordType = Obs.RecordType
 	return Obs
 }
-
 
 // select 1 row
 func QueryRow() map[string]interface{} {
@@ -95,7 +95,7 @@ func QueryRow() map[string]interface{} {
 }
 
 // select rows
-func QueryRows()  {
+func QueryRows() {
 	sqlStr := "select id,orderNo,recordType from t_base_enterprise_orderBill where id > ?"
 
 	rows, err := db.Query(sqlStr, 90)
@@ -115,6 +115,11 @@ func QueryRows()  {
 		fmt.Printf("id:%d orderNo:%s recordType:%s\n", orderBill.Id, orderBill.OrderNo, orderBill.RecordType)
 	}
 }
+
+// add 1 data
+//func InsertRowDemo() {
+//	sqlStr := "insert into "
+//}
 
 func RunSql() interface{} {
 	err := InitDB()

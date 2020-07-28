@@ -30,8 +30,40 @@ type Invoice struct {
 	} `json:"data"`
 }
 
+type Insurance struct {
+	UserId int `json:"user_id"`
+	Data   struct {
+		CarId       int     `json:"car_id"`
+		InsuranceNo string  `json:"insurance_no"`
+		Type        string  `json:"type"`
+		Price       float64 `json:"price"`
+		Company     string  `json:"company"`
+		StartTime   string  `json:"start_time"`
+	} `json:"data"`
+}
+
 func main() {
 	r := gin.Default()
+
+	r.POST("/addInsurance", func(c *gin.Context) {
+		var insurance Insurance
+		err := c.BindJSON(&insurance)
+		if err != nil {
+			c.JSON(333, gin.H{
+				"status":"333",
+				"message":err,
+			})
+			return
+		}
+		c.JSON(200, gin.H{
+			"status":"333",
+			"message":insurance,
+		})
+		return
+
+
+	})
+
 	r.GET("/get", func(c *gin.Context) {
 		c.String(http.StatusOK, "信息，系统管理等模块")
 	})
@@ -219,7 +251,7 @@ func main() {
 			"id":         orderBill.Id,
 			"orderNo":    orderBill.OrderNo,
 			"recordType": orderBill.RecordType,
-			"data": orderBill.Data,
+			"data":       orderBill.Data,
 		})
 	})
 
