@@ -31,14 +31,14 @@ type Invoice struct {
 }
 
 type Insurance struct {
-	UserId int `json:"user_id"`
+	UserId int `json:"userId"`
 	Data   struct {
-		CarId       int     `json:"car_id"`
-		InsuranceNo string  `json:"insurance_no"`
-		Type        string  `json:"type"`
-		Price       float64 `json:"price"`
-		Company     string  `json:"company"`
-		StartTime   string  `json:"start_time"`
+		CarId       int     `json:"carId"`
+		InsuranceNo string  `json:"insuranceNo"`
+		Type        string  `json:"Type"`
+		Price       float64 `json:"Price"`
+		Company     string  `json:"Company"`
+		StartTime   string  `json:"StartTime"`
 	} `json:"data"`
 }
 
@@ -47,6 +47,7 @@ func main() {
 
 	r.POST("/addInsurance", func(c *gin.Context) {
 		var insurance Insurance
+
 		err := c.BindJSON(&insurance)
 		if err != nil {
 			c.JSON(333, gin.H{
@@ -55,9 +56,29 @@ func main() {
 			})
 			return
 		}
+
+		var insertInsurance sqlite.T_base_enterprise_vehicle_insurance
+		insertInsurance.EnterpriseId = 1
+		insertInsurance.RetailId = 1
+		insertInsurance.CarId = insurance.Data.CarId
+		insertInsurance.InsuranceNo = insurance.Data.InsuranceNo
+		insertInsurance.Type = insurance.Data.Type
+		insertInsurance.Price = int(insurance.Data.Price * 100)
+		insertInsurance.Company = insurance.Data.Company
+		insertInsurance.StartTime = insurance.Data.StartTime
+		insertInsurance.Operator = "李四童"
+		err = sqlite.InitDB()
+		if err != nil {
+			c.JSON(333, gin.H{
+				"status":"333",
+				"message":err,
+			})
+		}
+		data := sqlite.InsertRowDemo(&insertInsurance)
+
 		c.JSON(http.StatusOK, gin.H{
 			"status":http.StatusOK,
-			"message":insurance,
+			"message":data,
 		})
 		return
 

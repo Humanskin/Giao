@@ -26,6 +26,39 @@ type t_base_enterprise_orderBill struct {
 	connectPayOrder string
 }
 
+type T_base_enterprise_vehicle_insurance struct {
+	id           int    `json:"id"`
+	EnterpriseId int    `json:"enterpriseId"`
+	RetailId     int    `json:"retail_id"`
+	CarId        int    `json:"car_id"`
+	InsuranceNo  string `json:"insurance_no"`
+	Type         string `json:"type"`
+	Price        int    `json:"price"`
+	Company      string `json:"company"`
+	StartTime    string `json:"start_time"`
+	EndTime      string `json:"end_time"`
+	Operator     string `json:"operator"`
+	IsStop       int    `json:"is_stop"`
+}
+
+// add 1 data
+func InsertRowDemo(ins *T_base_enterprise_vehicle_insurance) interface{} {
+	sqlStr := fmt.Sprintf("insert into t_base_enterprise_vehicle_insurance (enterpriseId,retailId,carId,insuranceNo,type,price,company,startTime,operator) values (%d,%d,%d,'%s','%s',%d,'%s','%s','%s')",
+		ins.EnterpriseId, ins.RetailId, ins.CarId, ins.InsuranceNo, ins.Type, ins.Price, ins.Company, ins.StartTime, ins.Operator)
+
+	ret, err := db.Exec(sqlStr)
+	if err != nil {
+		return err
+	}
+
+	theId, err := ret.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	return theId
+}
+
 func InitDB() (err error) {
 	dsn := "root:root@tcp(127.0.0.1:3306)/zhongzhong?charset=utf8mb4&parseTime=True"
 	db, err = sql.Open("mysql", dsn)
@@ -115,11 +148,6 @@ func QueryRows() {
 		fmt.Printf("id:%d orderNo:%s recordType:%s\n", orderBill.Id, orderBill.OrderNo, orderBill.RecordType)
 	}
 }
-
-// add 1 data
-//func InsertRowDemo() {
-//	sqlStr := "insert into "
-//}
 
 func RunSql() interface{} {
 	err := InitDB()
