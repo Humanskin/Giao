@@ -1,15 +1,15 @@
 # Giao
-2020-07-29
+2020-07-23
 
-> clean repository
+> upload some code to learn gin
 
 2020-07-27
 
 > upload select row and rows from mysql
 
-2020-07-23
+2020-07-29
 
-> upload some code to learn gin
+> clean repository
 
 ### study
 
