@@ -55,8 +55,8 @@ func main() {
 			})
 			return
 		}
-		c.JSON(200, gin.H{
-			"status":"333",
+		c.JSON(http.StatusOK, gin.H{
+			"status":http.StatusOK,
 			"message":insurance,
 		})
 		return
