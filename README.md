@@ -1,4 +1,8 @@
 # Giao
+2020-07-29
+
+> clean repository
+
 2020-07-27
 
 > upload select row and rows from mysql
