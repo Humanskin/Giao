@@ -33,8 +33,8 @@ type Invoice struct {
 type Insurance struct {
 	UserId int `json:"userId"`
 	Data   struct {
-		CarId       int     `json:"carId"`
-		InsuranceNo string  `json:"insuranceNo"`
+		CarId       int     `json:"CarId"`
+		InsuranceNo string  `json:"InsuranceNo"`
 		Type        string  `json:"Type"`
 		Price       float64 `json:"Price"`
 		Company     string  `json:"Company"`
