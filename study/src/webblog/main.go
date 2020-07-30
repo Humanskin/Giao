@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"sync"
 	sc "webblog/middleware"
 	sqls "webblog/sqlconfig"
 	"webblog/sqlite"
@@ -42,21 +43,70 @@ type Insurance struct {
 	} `json:"data"`
 }
 
+var wg sync.WaitGroup
+
 func main() {
 	r := gin.Default()
 
 	r.POST("/addInsurance", func(c *gin.Context) {
+
 		var insurance Insurance
 		//var insurance sqlite.T_base_enterprise_vehicle_insurance
 
 		err := c.BindJSON(&insurance)
 		if err != nil {
 			c.JSON(333, gin.H{
-				"status":"333",
-				"message":err,
+				"status":  "333",
+				"message": err,
 			})
 			return
 		}
+
+		err = sqlite.InitDB()
+		if err != nil {
+			c.JSON(333, gin.H{
+				"status":  "333",
+				"message": err,
+			})
+		}
+
+		operator := sqlite.User{
+			Id: insurance.UserId,
+		}
+
+		// 获取操作人信息
+		wg.Add(1)
+
+		var errs error
+		go func(es *error) {
+			err = sqlite.GetUser(&operator)
+			if err != nil {
+				es = &err
+				c.JSON(433, gin.H{
+					"status":  "222",
+					"message": fmt.Sprintf("未找到操作人信息，请核实%v", *es),
+				})
+				wg.Done()
+				return
+			}
+			es = nil
+		}(&errs)
+		wg.Wait()
+		if errs != nil {
+			c.JSON(333, gin.H{
+				"status":  "333",
+				"message": fmt.Sprintf("未找到操作人信息，请核实%v", errs),
+			})
+
+			return
+		}
+
+		c.JSON(444, gin.H{
+			"status":  "444",
+			"message": fmt.Sprintf("未找到操作人信息，请核实%v", errs),
+		})
+
+		return
 
 		var insertInsurance sqlite.T_base_enterprise_vehicle_insurance
 
@@ -66,27 +116,6 @@ func main() {
 		insertInsurance.Price = int(insurance.Data.Price * 100)
 		insertInsurance.Company = insurance.Data.Company
 		insertInsurance.StartTime = insurance.Data.StartTime
-
-		err = sqlite.InitDB()
-		if err != nil {
-			c.JSON(333, gin.H{
-				"status":"333",
-				"message":err,
-			})
-		}
-
-		operator := sqlite.User{
-			Id: insurance.UserId,
-		}
-		//// 获取操作人信息
-		err = sqlite.GetUser(&operator)
-		if err != nil {
-			c.JSON(333, gin.H{
-				"status":"444",
-				"message":err,
-			})
-			return
-		}
 		insertInsurance.EnterpriseId = operator.EnterpriseId
 		insertInsurance.RetailId = operator.RetailId
 		insertInsurance.Operator = operator.Realname
@@ -95,12 +124,11 @@ func main() {
 		data := sqlite.InsertRowDemo(&insertInsurance)
 
 		c.JSON(http.StatusOK, gin.H{
-			"status":http.StatusOK,
-			"message2":data,
+			"status":   http.StatusOK,
+			"message2": data,
 		})
+
 		return
-
-
 	})
 
 	r.GET("/get", func(c *gin.Context) {
@@ -293,6 +321,7 @@ func main() {
 			"data":       orderBill.Data,
 		})
 	})
+
 
 	r.Run(":8899")
 }
