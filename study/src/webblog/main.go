@@ -5,10 +5,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	tp "webblog/testpost"
 	sc "webblog/middleware"
 	sqls "webblog/sqlconfig"
 	"webblog/sqlite"
+	tp "webblog/testpost"
 )
 
 type User struct {
@@ -47,6 +47,7 @@ func main() {
 
 	r.POST("/addInsurance", func(c *gin.Context) {
 		var insurance Insurance
+		//var insurance sqlite.T_base_enterprise_vehicle_insurance
 
 		err := c.BindJSON(&insurance)
 		if err != nil {
@@ -58,15 +59,14 @@ func main() {
 		}
 
 		var insertInsurance sqlite.T_base_enterprise_vehicle_insurance
-		insertInsurance.EnterpriseId = 1
-		insertInsurance.RetailId = 1
+
 		insertInsurance.CarId = insurance.Data.CarId
 		insertInsurance.InsuranceNo = insurance.Data.InsuranceNo
 		insertInsurance.Type = insurance.Data.Type
 		insertInsurance.Price = int(insurance.Data.Price * 100)
 		insertInsurance.Company = insurance.Data.Company
 		insertInsurance.StartTime = insurance.Data.StartTime
-		insertInsurance.Operator = "李四童"
+
 		err = sqlite.InitDB()
 		if err != nil {
 			c.JSON(333, gin.H{
@@ -74,11 +74,29 @@ func main() {
 				"message":err,
 			})
 		}
+
+		operator := sqlite.User{
+			Id: insurance.UserId,
+		}
+		//// 获取操作人信息
+		err = sqlite.GetUser(&operator)
+		if err != nil {
+			c.JSON(333, gin.H{
+				"status":"444",
+				"message":err,
+			})
+			return
+		}
+		insertInsurance.EnterpriseId = operator.EnterpriseId
+		insertInsurance.RetailId = operator.RetailId
+		insertInsurance.Operator = operator.Realname
+
+		// 插入数据
 		data := sqlite.InsertRowDemo(&insertInsurance)
 
 		c.JSON(http.StatusOK, gin.H{
 			"status":http.StatusOK,
-			"message":data,
+			"message2":data,
 		})
 		return
 

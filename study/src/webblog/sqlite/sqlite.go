@@ -29,19 +29,26 @@ type t_base_enterprise_orderBill struct {
 type T_base_enterprise_vehicle_insurance struct {
 	id           int    `json:"id"`
 	EnterpriseId int    `json:"enterpriseId"`
-	RetailId     int    `json:"retail_id"`
-	CarId        int    `json:"car_id"`
-	InsuranceNo  string `json:"insurance_no"`
+	RetailId     int    `json:"retailId"`
+	CarId        int    `json:"carId"`
+	InsuranceNo  string `json:"insuranceNo"`
 	Type         string `json:"type"`
 	Price        int    `json:"price"`
 	Company      string `json:"company"`
-	StartTime    string `json:"start_time"`
-	EndTime      string `json:"end_time"`
+	StartTime    string `json:"startTime"`
+	EndTime      string `json:"endTime"`
 	Operator     string `json:"operator"`
-	IsStop       int    `json:"is_stop"`
+	IsStop       int    `json:"isStop"`
 }
 
-// add 1 data
+type User struct {
+	Id           int    `json:"id"`
+	EnterpriseId int    `json:"enterpriseId"`
+	RetailId     int    `json:"retailId"`
+	Realname     string `json:"realname"`
+}
+
+// add data
 func InsertRowDemo(ins *T_base_enterprise_vehicle_insurance) interface{} {
 	sqlStr := fmt.Sprintf("insert into t_base_enterprise_vehicle_insurance (enterpriseId,retailId,carId,insuranceNo,type,price,company,startTime,operator) values (%d,%d,%d,'%s','%s',%d,'%s','%s','%s')",
 		ins.EnterpriseId, ins.RetailId, ins.CarId, ins.InsuranceNo, ins.Type, ins.Price, ins.Company, ins.StartTime, ins.Operator)
@@ -57,6 +64,16 @@ func InsertRowDemo(ins *T_base_enterprise_vehicle_insurance) interface{} {
 	}
 
 	return theId
+}
+
+// select id,enterpriseId,retailId and realname from User table
+func GetUser(user *User) (err error) {
+	sqlStr := "select enterpriseId,retailId,realname from t_base_enterprise_user where id=?"
+	err = db.QueryRow(sqlStr, user.Id).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func InitDB() (err error) {
