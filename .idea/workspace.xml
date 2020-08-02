@@ -21,8 +21,7 @@
   <component name="ChangeListManager">
     <list default="true" id="1f53dee3-9ffc-475c-aea0-c1ba34428172" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/study/src/webblog/middleware/statcost.go" beforeDir="false" afterPath="$PROJECT_DIR$/study/src/webblog/middleware/statcost.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/study/src/webblog/testpost/testpost.go" beforeDir="false" afterPath="$PROJECT_DIR$/study/src/webblog/testpost/testpost.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/study/src/webblog/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/study/src/webblog/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +59,7 @@
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -95,9 +94,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="400" y="504" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400@0.0.2560.1400" timestamp="1595712590911" />
-    <state x="1421" y="344" key="SettingsEditor" timestamp="1595704753281">
-      <screen x="0" y="0" width="2560" height="1400" />
+    <state x="1473" y="234" key="SettingsEditor" timestamp="1596392304922">
+      <screen x="0" y="0" width="3440" height="1400" />
     </state>
     <state x="1421" y="344" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1595704753281" />
+    <state x="1473" y="234" key="SettingsEditor/0.0.3440.1400@0.0.3440.1400" timestamp="1596392304922" />
   </component>
 </project>

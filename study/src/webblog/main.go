@@ -48,6 +48,24 @@ var wg sync.WaitGroup
 func main() {
 	r := gin.Default()
 
+	r.POST("/test/js", func(c *gin.Context) {
+		var v Insurance
+		err := c.BindJSON(&v)
+		if err != nil {
+			c.JSON(333, gin.H{
+				"status":  "333",
+				"message": err,
+			})
+			return
+		}
+
+		c.JSON(333, gin.H{
+			"status":  "200",
+			"message": v,
+		})
+		return
+	})
+
 	r.POST("/addInsurance", func(c *gin.Context) {
 
 		var insurance Insurance
@@ -321,7 +339,6 @@ func main() {
 			"data":       orderBill.Data,
 		})
 	})
-
 
 	r.Run(":8899")
 }
