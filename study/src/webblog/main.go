@@ -44,6 +44,7 @@ type Insurance struct {
 }
 
 var wg sync.WaitGroup
+var ch = make(chan interface{}, 1)
 
 func main() {
 	r := gin.Default()
@@ -95,25 +96,26 @@ func main() {
 		// 获取操作人信息
 		wg.Add(1)
 
-		var errs error
-		go func(es *error) {
-			err = sqlite.GetUser(&operator)
-			if err != nil {
-				es = &err
-				c.JSON(433, gin.H{
-					"status":  "222",
-					"message": fmt.Sprintf("未找到操作人信息，请核实%v", *es),
-				})
-				wg.Done()
-				return
-			}
-			es = nil
-		}(&errs)
+		go func() {
+			//err = sqlite.GetUser(&operator)
+			//if err != nil {
+			//	es = &err
+			//	c.JSON(433, gin.H{
+			//		"status":  "222",
+			//		"message": fmt.Sprintf("未找到操作人信息，请核实%v", *es),
+			//	})
+			//	wg.Done()
+			//	return
+			//}
+			//es = nil
+			ch <- sqlite.GetUser(&operator)
+			wg.Done()
+		}()
 		wg.Wait()
-		if errs != nil {
+		if err := <-ch; err != nil {
 			c.JSON(333, gin.H{
 				"status":  "333",
-				"message": fmt.Sprintf("未找到操作人信息，请核实%v", errs),
+				"message": fmt.Sprintf("未找到操作人信息1，请核实%v", err),
 			})
 
 			return
@@ -121,7 +123,7 @@ func main() {
 
 		c.JSON(444, gin.H{
 			"status":  "444",
-			"message": fmt.Sprintf("未找到操作人信息，请核实%v", errs),
+			"message": fmt.Sprintf("未找到操作人信息2，请核实%v", err),
 		})
 
 		return
