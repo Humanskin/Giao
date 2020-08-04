@@ -52,7 +52,6 @@ type ValidateTest struct {
 	EnterpriseId int
 	RetailId     int
 	CarId        int
-	Status       string
 	InsuranceId  int
 	InsuranceNo  string
 }
@@ -77,30 +76,33 @@ func InsertRowDemo(ins *T_base_enterprise_vehicle_insurance) interface{} {
 
 // select id,enterpriseId,retailId and realname from User table
 func GetUser(user *User) (err error) {
-	sqlStr := "select enterpriseId,retailId,realname from t_base_enterprise_user where id=?"
-	err = db.QueryRow(sqlStr, user.Id).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
+	sqlStr := fmt.Sprintf("select enterpriseId,retailId,realname from t_base_enterprise_user where id=%d", user.Id)
+	err = db.QueryRow(sqlStr).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
 
 	return err
 }
 
 // select carInfo from User table
 func GetCarInfo(user *ValidateTest) (err error) {
-	sqlStr := "select id,status from t_base_enterprise_vehicle where id=? and status=?"
-	err = db.QueryRow(sqlStr, user.CarId).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
+	sqlStr := fmt.Sprintf("select id from t_base_enterprise_vehicle where id=%d and status='%s'", user.CarId, "在线")
+	err = db.QueryRow(sqlStr).Scan(&user.CarId)
 
 	return err
 }
 
 // select id,enterpriseId,retailId and realname from User table
-func GetInsNo(user *ValidateTest) (err error) {
-	sqlStr := "select id from t_base_enterprise_user where insuranceNo=?"
-	err = db.QueryRow(sqlStr, user.InsuranceNo).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
+func GetInsNo(user *ValidateTest)  error {
+	sqlStr := fmt.Sprintf("select id from `t_base_enterprise_vehicle_insurance` where insuranceNo='%s'", user.InsuranceNo)
+	err := db.QueryRow(sqlStr).Scan(&user.InsuranceId)
 
+	if err != nil {
+		return nil
+	}
 	return err
 }
 
 func InitDB() (err error) {
-	dsn := "root:root@tcp(127.0.0.1:3306)/zhongzhong?charset=utf8mb4&parseTime=True"
+	dsn := "root:root@tcp(127.0.0.1:3306)/zhongzhong"
 	db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		return err

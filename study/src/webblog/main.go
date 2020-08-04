@@ -44,7 +44,7 @@ type Insurance struct {
 }
 
 var wg sync.WaitGroup
-var ch = make(chan interface{}, 1)
+var ch = make(chan interface{}, 3)
 
 func main() {
 	r := gin.Default()
@@ -92,10 +92,15 @@ func main() {
 		operator := sqlite.User{
 			Id: insurance.UserId,
 		}
+		datas := sqlite.ValidateTest{
+			CarId:       insurance.Data.CarId,
+			InsuranceNo: insurance.Data.InsuranceNo,
+		}
 
 		// 获取操作人信息
-		wg.Add(1)
+		wg.Add(3)
 
+		// 检查用户是否存在
 		go func() {
 			//err = sqlite.GetUser(&operator)
 			//if err != nil {
@@ -111,23 +116,51 @@ func main() {
 			ch <- sqlite.GetUser(&operator)
 			wg.Done()
 		}()
-		wg.Wait()
-		if err := <-ch; err != nil {
-			c.JSON(333, gin.H{
-				"status":  "333",
-				"message": fmt.Sprintf("未找到操作人信息1，请核实%v", err),
-			})
+		// 检查用户是否存在
+		go func() {
+			ch <- sqlite.GetCarInfo(&datas)
+			wg.Done()
+		}()
+		// 检查保险号是否重复
+		go func() {
+			ch <- sqlite.GetInsNo(&datas)
+			wg.Done()
+		}()
 
+		//for range ch {
+		//	if err := <-ch; err != nil {
+		//		c.JSON(333, gin.H{
+		//			"status":  "333",
+		//			"message": fmt.Sprintf("未找到操作人信息1，请核实%v", err),
+		//		})
+		//		return
+		//	}
+		//}
+
+		//for err := range ch {
+		//	if err != nil {
+		//		c.JSON(333, gin.H{
+		//			"status":  "333",
+		//			"message": fmt.Sprintf("未找到操作人信息1，请核实%v", err),
+		//		})
+		//		return
+		//	}
+		//}
+		wg.Wait()
+		if datas.InsuranceId != 0 || datas.CarId == 0 {
+			c.JSON(555, gin.H{
+				"status":  "555",
+				"message": fmt.Sprintf("未找到操作人信息3，请核实%s、%s", "InsuranceId", "CarId"),
+			})
 			return
 		}
-
-		c.JSON(444, gin.H{
-			"status":  "444",
-			"message": fmt.Sprintf("未找到操作人信息2，请核实%v", operator),
-		})
-
-		return
-
+		//c.JSON(444, gin.H{
+		//	"status":  "444",
+		//	"message": fmt.Sprintf("未找到操作人信息2，请核实%v", datas),
+		//})
+		//
+		//return
+		//close(ch)
 		var insertInsurance sqlite.T_base_enterprise_vehicle_insurance
 
 		insertInsurance.CarId = insurance.Data.CarId
