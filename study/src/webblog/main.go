@@ -123,7 +123,7 @@ func main() {
 
 		c.JSON(444, gin.H{
 			"status":  "444",
-			"message": fmt.Sprintf("未找到操作人信息2，请核实%v", err),
+			"message": fmt.Sprintf("未找到操作人信息2，请核实%v", operator),
 		})
 
 		return

@@ -48,6 +48,15 @@ type User struct {
 	Realname     string `json:"realname"`
 }
 
+type ValidateTest struct {
+	EnterpriseId int
+	RetailId     int
+	CarId        int
+	Status       string
+	InsuranceId  int
+	InsuranceNo  string
+}
+
 // add data
 func InsertRowDemo(ins *T_base_enterprise_vehicle_insurance) interface{} {
 	sqlStr := fmt.Sprintf("insert into t_base_enterprise_vehicle_insurance (enterpriseId,retailId,carId,insuranceNo,type,price,company,startTime,operator) values (%d,%d,%d,'%s','%s',%d,'%s','%s','%s')",
@@ -70,10 +79,24 @@ func InsertRowDemo(ins *T_base_enterprise_vehicle_insurance) interface{} {
 func GetUser(user *User) (err error) {
 	sqlStr := "select enterpriseId,retailId,realname from t_base_enterprise_user where id=?"
 	err = db.QueryRow(sqlStr, user.Id).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return err
+}
+
+// select carInfo from User table
+func GetCarInfo(user *ValidateTest) (err error) {
+	sqlStr := "select id,status from t_base_enterprise_vehicle where id=? and status=?"
+	err = db.QueryRow(sqlStr, user.CarId).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
+
+	return err
+}
+
+// select id,enterpriseId,retailId and realname from User table
+func GetInsNo(user *ValidateTest) (err error) {
+	sqlStr := "select id from t_base_enterprise_user where insuranceNo=?"
+	err = db.QueryRow(sqlStr, user.InsuranceNo).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
+
+	return err
 }
 
 func InitDB() (err error) {
