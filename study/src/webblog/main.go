@@ -44,7 +44,7 @@ type Insurance struct {
 }
 
 var wg sync.WaitGroup
-var ch = make(chan interface{}, 3)
+//var ch = make(chan interface{}, 3)
 
 func main() {
 
@@ -100,29 +100,30 @@ func main() {
 		}
 
 		//// 获取操作人信息
-		wg.Add(1)
+		//wg.Add(1)
+		////
+		////// 检查用户是否存在
+		//go func() {
+		//	sqlite.GetUser(&operator)
+		//	wg.Done()
+		//}()
 		//
-		//// 检查用户是否存在
-		go func() {
-			sqlite.GetUser(&operator)
-			wg.Done()
-		}()
+		//// 检查车辆是否存在
+		//wg.Add(1)
+		//go func() {
+		//	sqlite.GetCarInfo(&datas)
+		//	wg.Done()
+		//}()
+		//
+		//// 检查保险号是否重复
+		//wg.Add(1)
+		//go func() {
+		//	sqlite.GetInsNo(&datas)
+		//	wg.Done()
+		//}()
+		//
+		//
 
-		// 检查车辆是否存在
-		wg.Add(1)
-		go func() {
-			sqlite.GetCarInfo(&datas)
-			wg.Done()
-		}()
-
-		// 检查保险号是否重复
-		wg.Add(1)
-		go func() {
-			sqlite.GetInsNo(&datas)
-			wg.Done()
-		}()
-
-		wg.Wait()
 		//for range ch {
 		//	if err := <-ch; err != nil {
 		//		c.JSON(333, gin.H{
@@ -139,7 +140,13 @@ func main() {
 		//	})
 		//	return
 		//}
+		wg.Add(3)
 
+		go sqlite.GetUser(&operator, &wg)
+		go sqlite.GetCarInfo(&datas, &wg)
+		go sqlite.GetInsNo(&datas, &wg)
+
+		wg.Wait()
 		if operator.IsUser != nil || datas.IsHaveNo != nil || datas.IsCar != nil{
 			c.JSON(333, gin.H{
 				"status":  "333",

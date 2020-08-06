@@ -4,6 +4,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
 	"fmt"
+	"sync"
 )
 
 var Db *sql.DB
@@ -78,27 +79,29 @@ func InsertRowDemo(ins *T_base_enterprise_vehicle_insurance) interface{} {
 }
 
 // select id,enterpriseId,retailId and realname from User table
-func GetUser(user *User) {
+func GetUser(user *User, wg *sync.WaitGroup) {
 	sqlStr := fmt.Sprintf("select enterpriseId,retailId,realname from t_base_enterprise_user where id=%d", user.Id)
 	err := Db.QueryRow(sqlStr).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
 	if err != nil {
 		user.IsUser = err
 	}
+	wg.Done()
 	return
 }
 
 // select carInfo from User table
-func GetCarInfo(user *ValidateTest) {
+func GetCarInfo(user *ValidateTest, wg *sync.WaitGroup) {
 	sqlStr := fmt.Sprintf("select id from t_base_enterprise_vehicle where id=%d and status='%s'", user.CarId, "在线")
 	err := Db.QueryRow(sqlStr).Scan(&user.CarId)
 	if err != nil {
 		user.IsCar = err
 	}
+	wg.Done()
 	return
 }
 
 // select id,enterpriseId,retailId and realname from User table
-func GetInsNo(user *ValidateTest) {
+func GetInsNo(user *ValidateTest, wg *sync.WaitGroup) {
 	sqlStr := fmt.Sprintf("select id from `t_base_enterprise_vehicle_insurance` where insuranceNo='%s'", user.InsuranceNo)
 	err := Db.QueryRow(sqlStr).Scan(&user.InsuranceId)
 	if err == sql.ErrNoRows {
@@ -106,8 +109,9 @@ func GetInsNo(user *ValidateTest) {
 	} else if err == nil{
 		err = sql.ErrNoRows
 	}
-
+	wg.Done()
 	user.IsHaveNo = err
+
 	return
 }
 
