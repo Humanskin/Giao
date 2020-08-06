@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-var db *sql.DB
+var Db *sql.DB
 
 type t_base_enterprise_orderBill struct {
 	Id              int
@@ -61,7 +61,7 @@ func InsertRowDemo(ins *T_base_enterprise_vehicle_insurance) interface{} {
 	sqlStr := fmt.Sprintf("insert into t_base_enterprise_vehicle_insurance (enterpriseId,retailId,carId,insuranceNo,type,price,company,startTime,operator) values (%d,%d,%d,'%s','%s',%d,'%s','%s','%s')",
 		ins.EnterpriseId, ins.RetailId, ins.CarId, ins.InsuranceNo, ins.Type, ins.Price, ins.Company, ins.StartTime, ins.Operator)
 
-	ret, err := db.Exec(sqlStr)
+	ret, err := Db.Exec(sqlStr)
 	if err != nil {
 		return err
 	}
@@ -75,27 +75,26 @@ func InsertRowDemo(ins *T_base_enterprise_vehicle_insurance) interface{} {
 }
 
 // select id,enterpriseId,retailId and realname from User table
-func GetUser(user *User) (err error) {
+func GetUser(user *User) error {
 	sqlStr := fmt.Sprintf("select enterpriseId,retailId,realname from t_base_enterprise_user where id=%d", user.Id)
-	err = db.QueryRow(sqlStr).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
+	err := Db.QueryRow(sqlStr).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
 
 	return err
 }
 
 // select carInfo from User table
-func GetCarInfo(user *ValidateTest) (err error) {
+func GetCarInfo(user *ValidateTest) error {
 	sqlStr := fmt.Sprintf("select id from t_base_enterprise_vehicle where id=%d and status='%s'", user.CarId, "在线")
-	err = db.QueryRow(sqlStr).Scan(&user.CarId)
+	err := Db.QueryRow(sqlStr).Scan(&user.CarId)
 
 	return err
 }
 
 // select id,enterpriseId,retailId and realname from User table
-func GetInsNo(user *ValidateTest)  error {
+func GetInsNo(user *ValidateTest) error {
 	sqlStr := fmt.Sprintf("select id from `t_base_enterprise_vehicle_insurance` where insuranceNo='%s'", user.InsuranceNo)
-	err := db.QueryRow(sqlStr).Scan(&user.InsuranceId)
-
-	if err != nil {
+	err := Db.QueryRow(sqlStr).Scan(&user.InsuranceId)
+	if err == sql.ErrNoRows {
 		return nil
 	}
 	return err
@@ -103,16 +102,24 @@ func GetInsNo(user *ValidateTest)  error {
 
 func InitDB() (err error) {
 	dsn := "root:root@tcp(127.0.0.1:3306)/zhongzhong"
-	db, err = sql.Open("mysql", dsn)
+	Db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		return err
 	}
 
-	err = db.Ping()
+	err = Db.Ping()
 	if err != nil {
 		return err
 	}
 
+	return nil
+}
+
+func CloseDB() error {
+	err := Db.Close()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -131,7 +138,7 @@ func QueryRowStruct() Obs {
 	sqlStr := "select id,orderNo,recordType from t_base_enterprise_orderBill where id=?"
 	var orderBill t_base_enterprise_orderBill
 	var o Obs
-	err := db.QueryRow(sqlStr, 1).Scan(&orderBill.Id, &orderBill.OrderNo, &orderBill.RecordType)
+	err := Db.QueryRow(sqlStr, 1).Scan(&orderBill.Id, &orderBill.OrderNo, &orderBill.RecordType)
 	if err != nil {
 		fmt.Printf("error: %v", err)
 		return o
@@ -154,7 +161,7 @@ func QueryRow() map[string]interface{} {
 	sqlStr := "select id,orderNo,recordType from t_base_enterprise_orderBill where id=?"
 	var orderBill t_base_enterprise_orderBill
 
-	err := db.QueryRow(sqlStr, 1).Scan(&orderBill.Id, &orderBill.OrderNo, &orderBill.RecordType)
+	err := Db.QueryRow(sqlStr, 1).Scan(&orderBill.Id, &orderBill.OrderNo, &orderBill.RecordType)
 	if err != nil {
 		fmt.Printf("error: %v", err)
 		return nil
@@ -173,7 +180,7 @@ func QueryRow() map[string]interface{} {
 func QueryRows() {
 	sqlStr := "select id,orderNo,recordType from t_base_enterprise_orderBill where id > ?"
 
-	rows, err := db.Query(sqlStr, 90)
+	rows, err := Db.Query(sqlStr, 90)
 	if err != nil {
 		fmt.Printf("error: %s", err)
 		return

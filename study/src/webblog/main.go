@@ -47,6 +47,12 @@ var wg sync.WaitGroup
 var ch = make(chan interface{}, 3)
 
 func main() {
+	defer func() {
+		err := sqlite.CloseDB()
+		close(ch)
+		if err != nil {}
+	}()
+
 	r := gin.Default()
 
 	r.POST("/test/js", func(c *gin.Context) {
@@ -97,36 +103,30 @@ func main() {
 			InsuranceNo: insurance.Data.InsuranceNo,
 		}
 
-		// 获取操作人信息
-		wg.Add(3)
-
-		// 检查用户是否存在
-		go func() {
-			//err = sqlite.GetUser(&operator)
-			//if err != nil {
-			//	es = &err
-			//	c.JSON(433, gin.H{
-			//		"status":  "222",
-			//		"message": fmt.Sprintf("未找到操作人信息，请核实%v", *es),
-			//	})
-			//	wg.Done()
-			//	return
-			//}
-			//es = nil
+		//// 获取操作人信息
+		wg.Add(1)
+		//
+		//// 检查用户是否存在
+		go func(wg *sync.WaitGroup) {
 			ch <- sqlite.GetUser(&operator)
 			wg.Done()
-		}()
-		// 检查用户是否存在
-		go func() {
+		}(&wg)
+
+		// 检查车辆是否存在
+		wg.Add(1)
+		go func(wg *sync.WaitGroup) {
 			ch <- sqlite.GetCarInfo(&datas)
 			wg.Done()
-		}()
+		}(&wg)
+
 		// 检查保险号是否重复
-		go func() {
+		wg.Add(1)
+		go func(wg *sync.WaitGroup) {
 			ch <- sqlite.GetInsNo(&datas)
 			wg.Done()
-		}()
+		}(&wg)
 
+		wg.Wait()
 		//for range ch {
 		//	if err := <-ch; err != nil {
 		//		c.JSON(333, gin.H{
@@ -136,17 +136,35 @@ func main() {
 		//		return
 		//	}
 		//}
+		if errs := <-ch;errs != nil {
+			c.JSON(333, gin.H{
+				"status":  "333",
+				"message": fmt.Sprintf("未找到操作人信息1，请核实%v", errs),
+			})
+			return
+		}
 
-		//for err := range ch {
-		//	if err != nil {
-		//		c.JSON(333, gin.H{
-		//			"status":  "333",
-		//			"message": fmt.Sprintf("未找到操作人信息1，请核实%v", err),
-		//		})
-		//		return
-		//	}
+		//if err != nil {
+		//	c.JSON(333, gin.H{
+		//		"status":  "333",
+		//		"message": fmt.Sprintf("未找到操作人信息1，请核实%v", err),
+		//	})
 		//}
-		wg.Wait()
+		c.JSON(333, gin.H{
+			"status":  "333",
+			"message": fmt.Sprintf("未找到操作人信息2，请核实%v %v", operator,datas),
+		})
+		return
+		for err := range ch {
+			if err != nil {
+				c.JSON(333, gin.H{
+					"status":  "333",
+					"message": fmt.Sprintf("未找到操作人信息1，请核实%v", err),
+				})
+				return
+			}
+		}
+
 		if datas.InsuranceId != 0 || datas.CarId == 0 {
 			c.JSON(555, gin.H{
 				"status":  "555",
@@ -154,12 +172,12 @@ func main() {
 			})
 			return
 		}
-		//c.JSON(444, gin.H{
-		//	"status":  "444",
-		//	"message": fmt.Sprintf("未找到操作人信息2，请核实%v", datas),
-		//})
-		//
-		//return
+		c.JSON(444, gin.H{
+			"status":  "444",
+			"message": fmt.Sprintf("未找到操作人信息2，请核实%v", datas),
+		})
+
+		return
 		//close(ch)
 		var insertInsurance sqlite.T_base_enterprise_vehicle_insurance
 
