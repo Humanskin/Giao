@@ -47,11 +47,6 @@ var wg sync.WaitGroup
 var ch = make(chan interface{}, 3)
 
 func main() {
-	defer func() {
-		err := sqlite.CloseDB()
-		close(ch)
-		if err != nil {}
-	}()
 
 	r := gin.Default()
 
@@ -98,6 +93,7 @@ func main() {
 		operator := sqlite.User{
 			Id: insurance.UserId,
 		}
+
 		datas := sqlite.ValidateTest{
 			CarId:       insurance.Data.CarId,
 			InsuranceNo: insurance.Data.InsuranceNo,
@@ -107,24 +103,24 @@ func main() {
 		wg.Add(1)
 		//
 		//// 检查用户是否存在
-		go func(wg *sync.WaitGroup) {
-			ch <- sqlite.GetUser(&operator)
+		go func() {
+			sqlite.GetUser(&operator)
 			wg.Done()
-		}(&wg)
+		}()
 
 		// 检查车辆是否存在
 		wg.Add(1)
-		go func(wg *sync.WaitGroup) {
-			ch <- sqlite.GetCarInfo(&datas)
+		go func() {
+			sqlite.GetCarInfo(&datas)
 			wg.Done()
-		}(&wg)
+		}()
 
 		// 检查保险号是否重复
 		wg.Add(1)
-		go func(wg *sync.WaitGroup) {
-			ch <- sqlite.GetInsNo(&datas)
+		go func() {
+			sqlite.GetInsNo(&datas)
 			wg.Done()
-		}(&wg)
+		}()
 
 		wg.Wait()
 		//for range ch {
@@ -136,10 +132,18 @@ func main() {
 		//		return
 		//	}
 		//}
-		if errs := <-ch;errs != nil {
+		//if errs := <-ch;errs != nil {
+		//	c.JSON(333, gin.H{
+		//		"status":  "333",
+		//		"message": fmt.Sprintf("未找到操作人信息1，请核实%v", errs),
+		//	})
+		//	return
+		//}
+
+		if operator.IsUser != nil || datas.IsHaveNo != nil || datas.IsCar != nil{
 			c.JSON(333, gin.H{
 				"status":  "333",
-				"message": fmt.Sprintf("未找到操作人信息1，请核实%v", errs),
+				"message": "信息有误，请核实",
 			})
 			return
 		}
@@ -150,34 +154,34 @@ func main() {
 		//		"message": fmt.Sprintf("未找到操作人信息1，请核实%v", err),
 		//	})
 		//}
-		c.JSON(333, gin.H{
-			"status":  "333",
-			"message": fmt.Sprintf("未找到操作人信息2，请核实%v %v", operator,datas),
-		})
-		return
-		for err := range ch {
-			if err != nil {
-				c.JSON(333, gin.H{
-					"status":  "333",
-					"message": fmt.Sprintf("未找到操作人信息1，请核实%v", err),
-				})
-				return
-			}
-		}
-
-		if datas.InsuranceId != 0 || datas.CarId == 0 {
-			c.JSON(555, gin.H{
-				"status":  "555",
-				"message": fmt.Sprintf("未找到操作人信息3，请核实%s、%s", "InsuranceId", "CarId"),
-			})
-			return
-		}
-		c.JSON(444, gin.H{
-			"status":  "444",
-			"message": fmt.Sprintf("未找到操作人信息2，请核实%v", datas),
-		})
-
-		return
+		//c.JSON(333, gin.H{
+		//	"status":  "333",
+		//	"message": fmt.Sprintf("未找到操作人信息2，请核实%v %v", operator,datas),
+		//})
+		//return
+		//for err := range ch {
+		//	if err != nil {
+		//		c.JSON(333, gin.H{
+		//			"status":  "333",
+		//			"message": fmt.Sprintf("未找到操作人信息1，请核实%v", err),
+		//		})
+		//		return
+		//	}
+		//}
+		//
+		//if datas.InsuranceId != 0 || datas.CarId == 0 {
+		//	c.JSON(555, gin.H{
+		//		"status":  "555",
+		//		"message": fmt.Sprintf("未找到操作人信息3，请核实%s、%s", "InsuranceId", "CarId"),
+		//	})
+		//	return
+		//}
+		//c.JSON(444, gin.H{
+		//	"status":  "444",
+		//	"message": fmt.Sprintf("未找到操作人信息2，请核实%v", datas),
+		//})
+		//
+		//return
 		//close(ch)
 		var insertInsurance sqlite.T_base_enterprise_vehicle_insurance
 

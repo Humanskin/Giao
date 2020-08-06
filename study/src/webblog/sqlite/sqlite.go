@@ -46,6 +46,7 @@ type User struct {
 	EnterpriseId int    `json:"enterpriseId"`
 	RetailId     int    `json:"retailId"`
 	Realname     string `json:"realname"`
+	IsUser       error  `json:"isUser"`
 }
 
 type ValidateTest struct {
@@ -54,6 +55,8 @@ type ValidateTest struct {
 	CarId        int
 	InsuranceId  int
 	InsuranceNo  string
+	IsHaveNo     error
+	IsCar        error
 }
 
 // add data
@@ -75,29 +78,37 @@ func InsertRowDemo(ins *T_base_enterprise_vehicle_insurance) interface{} {
 }
 
 // select id,enterpriseId,retailId and realname from User table
-func GetUser(user *User) error {
+func GetUser(user *User) {
 	sqlStr := fmt.Sprintf("select enterpriseId,retailId,realname from t_base_enterprise_user where id=%d", user.Id)
 	err := Db.QueryRow(sqlStr).Scan(&user.EnterpriseId, &user.RetailId, &user.Realname)
-
-	return err
+	if err != nil {
+		user.IsUser = err
+	}
+	return
 }
 
 // select carInfo from User table
-func GetCarInfo(user *ValidateTest) error {
+func GetCarInfo(user *ValidateTest) {
 	sqlStr := fmt.Sprintf("select id from t_base_enterprise_vehicle where id=%d and status='%s'", user.CarId, "在线")
 	err := Db.QueryRow(sqlStr).Scan(&user.CarId)
-
-	return err
+	if err != nil {
+		user.IsCar = err
+	}
+	return
 }
 
 // select id,enterpriseId,retailId and realname from User table
-func GetInsNo(user *ValidateTest) error {
+func GetInsNo(user *ValidateTest) {
 	sqlStr := fmt.Sprintf("select id from `t_base_enterprise_vehicle_insurance` where insuranceNo='%s'", user.InsuranceNo)
 	err := Db.QueryRow(sqlStr).Scan(&user.InsuranceId)
 	if err == sql.ErrNoRows {
-		return nil
+		err = nil
+	} else if err == nil{
+		err = sql.ErrNoRows
 	}
-	return err
+
+	user.IsHaveNo = err
+	return
 }
 
 func InitDB() (err error) {
