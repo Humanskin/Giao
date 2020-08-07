@@ -44,11 +44,81 @@ type Insurance struct {
 }
 
 var wg sync.WaitGroup
-//var ch = make(chan interface{}, 3)
+var ch = make(chan error)
 
 func main() {
 
 	r := gin.Default()
+
+	r.POST("/addInsurance2", func(c *gin.Context) {
+		var insurance Insurance
+		err := c.BindJSON(&insurance)
+		if err != nil {
+			c.JSON(333, gin.H{
+				"status":  "333",
+				"message": err,
+			})
+			return
+		}
+
+		user := sqlite.User{
+			Id: insurance.UserId,
+		}
+		datas := sqlite.ValidateTest{
+			CarId:       insurance.Data.CarId,
+			InsuranceNo: insurance.Data.InsuranceNo,
+		}
+
+		err = sqlite.InitDB()
+		if err != nil {
+			c.JSON(333, gin.H{
+				"status":  "333",
+				"message": err,
+			})
+			return
+		}
+
+		wg.Add(1)
+		go func(ch chan error) {
+			ch <- sqlite.GetUser2(&user)
+			wg.Done()
+		}(ch)
+		c.String(222, "yes")
+		wg.Add(1)
+		go func(ch chan error) {
+			ch <- sqlite.GetCarInfo2(&datas)
+			wg.Done()
+		}(ch)
+		wg.Add(1)
+
+		go func(ch chan error) {
+			ch <- sqlite.GetInsNo2(&datas)
+			wg.Done()
+		}(ch)
+
+		wg.Wait()
+
+		for i := range ch {
+			fmt.Println(i)
+		}
+
+		//for range ch {
+		//	if err := <-ch; err != nil {
+		//		c.JSON(333, gin.H{
+		//			"status":  "444",
+		//			"message": err,
+		//		})
+		//	}
+		//}
+
+		return
+		c.JSON(333, gin.H{
+			"status":  "200",
+			"message": datas,
+		})
+		return
+
+	})
 
 	r.POST("/test/js", func(c *gin.Context) {
 		var v Insurance
@@ -147,7 +217,7 @@ func main() {
 		go sqlite.GetInsNo(&datas, &wg)
 
 		wg.Wait()
-		if operator.IsUser != nil || datas.IsHaveNo != nil || datas.IsCar != nil{
+		if operator.IsUser != nil || datas.IsHaveNo != nil || datas.IsCar != nil {
 			c.JSON(333, gin.H{
 				"status":  "333",
 				"message": "信息有误，请核实",
