@@ -44,13 +44,19 @@ type Insurance struct {
 }
 
 var wg sync.WaitGroup
-var ch = make(chan error)
+
+//var ch = make(chan error)
 
 func main() {
 
 	r := gin.Default()
 
 	r.POST("/addInsurance2", func(c *gin.Context) {
+
+		var ch1 = make(chan error)
+		var ch2 = make(chan error)
+		var ch3 = make(chan error)
+
 		var insurance Insurance
 		err := c.BindJSON(&insurance)
 		if err != nil {
@@ -82,25 +88,40 @@ func main() {
 		go func(ch chan error) {
 			ch <- sqlite.GetUser2(&user)
 			wg.Done()
-		}(ch)
+		}(ch1)
 		c.String(222, "yes")
+
 		wg.Add(1)
 		go func(ch chan error) {
 			ch <- sqlite.GetCarInfo2(&datas)
 			wg.Done()
-		}(ch)
-		wg.Add(1)
+		}(ch2)
 
+		wg.Add(1)
 		go func(ch chan error) {
 			ch <- sqlite.GetInsNo2(&datas)
 			wg.Done()
-		}(ch)
+		}(ch3)
 
-		wg.Wait()
+		go func() {
+			wg.Wait()
+		}()
 
-		for i := range ch {
-			fmt.Println(i)
+		if i1, i2, i3 := <-ch1, <-ch2, <-ch3; i1 != nil || i2 != nil || i3 != nil {
+			c.JSON(333, gin.H{
+				"status":  "444",
+				"message": "信息有误，请核实",
+			})
+			return
 		}
+
+		c.JSON(200, gin.H{
+			"status":  "200",
+			"message": "数据正确",
+		})
+		//wg.Wait()
+
+		return
 
 		//for range ch {
 		//	if err := <-ch; err != nil {
