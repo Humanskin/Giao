@@ -495,5 +495,22 @@ func main() {
 		})
 	})
 
+	userGroup := r.Group("/users")
+	{
+		userGroup.GET("/list", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"code":    200,
+				"message": "OK",
+			})
+		})
+	}
+
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"code":    404,
+			"message": "Page Not Exits",
+		})
+	})
+
 	r.Run(":8899")
 }
