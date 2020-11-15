@@ -19,10 +19,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1f53dee3-9ffc-475c-aea0-c1ba34428172" name="Default Changelist" comment="bugfix">
+    <list default="true" id="1f53dee3-9ffc-475c-aea0-c1ba34428172" name="Default Changelist" comment="refresher">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/study/src/testday5/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/study/src/testday5/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/study/src/webblog/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/study/src/webblog/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +76,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596913848053</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="refresher">
+      <created>1602010652965</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1602010652965</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -98,33 +103,29 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="bugfix" />
-    <option name="LAST_COMMIT_MESSAGE" value="bugfix" />
+    <MESSAGE value="refresher" />
+    <option name="LAST_COMMIT_MESSAGE" value="refresher" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
   </component>
   <component name="WindowStateProjectService">
-    <state x="400" y="504" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1595712590911">
-      <screen x="0" y="0" width="2560" height="1400" />
-    </state>
-    <state x="400" y="504" key="#com.intellij.fileTypes.FileTypeChooser/0.0.2560.1400@0.0.2560.1400" timestamp="1595712590911" />
-    <state x="1606" y="559" key="EnvironmentVariablesDialog" timestamp="1601999597681">
+    <state x="1606" y="559" key="EnvironmentVariablesDialog" timestamp="1604767256226">
       <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state x="1606" y="559" key="EnvironmentVariablesDialog/0.0.3440.1400@0.0.3440.1400" timestamp="1601999597681" />
-    <state x="2360" y="466" key="FileChooserDialogImpl" timestamp="1596912731344">
+    <state x="1606" y="559" key="EnvironmentVariablesDialog/0.0.3440.1400@0.0.3440.1400" timestamp="1604767256226" />
+    <state x="2360" y="466" key="FileChooserDialogImpl" timestamp="1604767265862">
       <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state x="2360" y="466" key="FileChooserDialogImpl/0.0.3440.1400@0.0.3440.1400" timestamp="1596912731344" />
+    <state x="2360" y="466" key="FileChooserDialogImpl/0.0.3440.1400@0.0.3440.1400" timestamp="1604767265862" />
     <state x="1473" y="234" key="SettingsEditor" timestamp="1601999580249">
       <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state x="1421" y="344" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1595704753281" />
     <state x="1473" y="234" key="SettingsEditor/0.0.3440.1400@0.0.3440.1400" timestamp="1601999580249" />
-    <state x="2172" y="444" key="Vcs.Push.Dialog.v2" timestamp="1596913852438">
+    <state x="2172" y="444" key="Vcs.Push.Dialog.v2" timestamp="1602010664918">
       <screen x="0" y="0" width="3440" height="1400" />
     </state>
-    <state x="2172" y="444" key="Vcs.Push.Dialog.v2/0.0.3440.1400@0.0.3440.1400" timestamp="1596913852438" />
+    <state x="2172" y="444" key="Vcs.Push.Dialog.v2/0.0.3440.1400@0.0.3440.1400" timestamp="1602010664918" />
     <state x="1513" y="612" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1598641661376">
       <screen x="0" y="0" width="3440" height="1400" />
     </state>
